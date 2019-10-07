@@ -144,8 +144,8 @@
     "redux-undo": "^1.0.0-beta9-9-7",
     "regenerator-runtime": "^0.13.3",
     "shortid": "^2.2.6",
-    "urijs": "^1.18.10"
-  },
+    "underscore": "^1.8.3"
+    },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",

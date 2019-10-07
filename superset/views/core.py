@@ -110,7 +110,6 @@ from .utils import (
     get_viz,
 )
 
-
 config = app.config
 CACHE_DEFAULT_TIMEOUT = config.get("CACHE_DEFAULT_TIMEOUT", 0)
 SQLLAB_QUERY_COST_ESTIMATE_TIMEOUT = config.get(
@@ -1036,9 +1035,14 @@ class Superset(BaseSupersetView):
         )
 
     def get_raw_results(self, viz_obj):
-        return self.json_response(
-            {"data": viz_obj.get_df_payload()["df"].to_dict("records")}
-        )
+        if viz_obj.viz_type == 'funnel':
+            result_data = viz_obj.get_data(None)
+        else:
+            result_data = viz_obj.get_df().to_dict('records')
+
+        return self.json_response({
+            'data': result_data
+        })
 
     def get_samples(self, viz_obj):
         return self.json_response({"data": viz_obj.get_samples()})
