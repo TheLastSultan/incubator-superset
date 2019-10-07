@@ -195,7 +195,7 @@ class BaseViz(object):
 
         timestamp_format = None
         if self.datasource.type == "table":
-            dttm_col = self.datasource.get_col(query_obj['granularity'])
+            dttm_col = self.datasource.get_col(query_obj["granularity"])
             if dttm_col:
                 timestamp_format = dttm_col.python_date_format
 
@@ -700,7 +700,7 @@ class TimeTableViz(BaseViz):
                 _("When using 'Group By' you are limited to use a single metric")
             )
         return d
-        
+
     def get_data(self, df):
         fd = self.form_data
         columns = None
