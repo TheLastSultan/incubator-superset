@@ -73,13 +73,13 @@ METRIC_KEYS = [
     "size",
 ]
 
+
 class BaseViz(object):
 
     """All visualizations derive this base class"""
 
     viz_type: Optional[str] = None
     verbose_name = "Base Viz"
-    is_multipass = False
     credits = ""
     is_timeseries = False
     cache_type = "df"
@@ -122,7 +122,6 @@ class BaseViz(object):
         # OrderedDict
         self.metric_dict = OrderedDict()
         fd = self.form_data
-
         for mkey in METRIC_KEYS:
             val = fd.get(mkey)
             if val:
@@ -135,18 +134,6 @@ class BaseViz(object):
         # Cast to list needed to return serializable object in py3
         self.all_metrics = list(self.metric_dict.values())
         self.metric_labels = list(self.metric_dict.keys())
-
-    def get_metric_label(self, metric):
-        if isinstance(metric, str):
-            return metric
-
-        if isinstance(metric, dict):
-            metric = metric.get('label')
-
-        if self.datasource.type == 'table':
-            db_engine_spec = self.datasource.database.db_engine_spec
-            metric = db_engine_spec.mutate_expression_label(metric)
-        return metric
 
     @staticmethod
     def handle_js_int_overflow(data):
@@ -207,8 +194,7 @@ class BaseViz(object):
         self.error_msg = ""
 
         timestamp_format = None
-
-        if self.datasource.type == 'table':
+        if self.datasource.type == "table":
             dttm_col = self.datasource.get_col(query_obj['granularity'])
             if dttm_col:
                 timestamp_format = dttm_col.python_date_format
@@ -276,8 +262,7 @@ class BaseViz(object):
         """Building a query object"""
         form_data = self.form_data
         self.process_query_filters()
-        self.process_metrics()
-        gb = form_data.get('groupby') or []
+        gb = form_data.get("groupby") or []
         metrics = self.all_metrics or []
         columns = form_data.get("columns") or []
         groupby = []
@@ -339,7 +324,6 @@ class BaseViz(object):
             "timeseries_limit_metric": timeseries_limit_metric,
             "order_desc": order_desc,
         }
-
         return d
 
     @property
@@ -715,10 +699,8 @@ class TimeTableViz(BaseViz):
             raise Exception(
                 _("When using 'Group By' you are limited to use a single metric")
             )
-        return dict(
-            payload= d
-        )
-
+        return d
+        
     def get_data(self, df):
         fd = self.form_data
         columns = None

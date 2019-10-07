@@ -51,19 +51,12 @@ export default {
         },
     ],
     controlOverrides: {
-    //     funnel_steps: {
-    //         renderTrigger: false,
-    //     },
-    //     filters:{
-    //         renderTrigger: false,
-    //     }
             adhoc_filters: {
                 renderTrigger: true,
             },
     },
 
     sectionOverrides: {
-        // sqlClause: [],
         filters: [],
         sqlaTimeSeries: {
             controlSetRows: [
