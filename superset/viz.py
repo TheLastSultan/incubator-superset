@@ -548,9 +548,10 @@ class FunnelViz(BaseViz):
 
         return df.to_dict(orient='records')
 
-    def query_obj(self):
+    def query_obj(self, fd=None):
 
-        fd = self.form_data
+        if not fd:
+            fd = self.form_data
 
         if not fd.get('funnel_steps'):
             raise Exception(_('Add at least one Step'))
@@ -568,7 +569,7 @@ class FunnelViz(BaseViz):
 
         result_query = {}
         for i in range(0, step_count):
-            index = str(fd['funnel_steps']['queries'][i]['id'])
+            index = str(i)
 
             fd['metrics'] = []
             fd['adhoc_filters'] = []

@@ -28,10 +28,7 @@ export default function transformProps(chartProps) {
     height,
     hooks,
   } = chartProps;
-  debugger;
-  if (typeof(Object.values(queryData.data)[0]) !== 'number'){
-  debugger; 
-  }
+
   return {
     verboseMap: datasource.verboseMap,
     datasource: rawDatasource,
