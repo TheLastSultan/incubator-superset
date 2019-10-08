@@ -28,20 +28,17 @@ export default function transformProps(chartProps) {
     height,
     hooks,
   } = chartProps;
-  const {
-    funnelSteps,
-  } = formData;
-  const { verboseMap } = datasource;
-  const { xAxisLabel, yAxisLabel } = rawFormData;
-
+  debugger;
+  if (typeof(Object.values(queryData.data)[0]) !== 'number'){
+  debugger; 
+  }
   return {
-    verboseMap,
+    verboseMap: datasource.verboseMap,
     datasource: rawDatasource,
-    queryData,
-    funnelSteps,
-    xAxisLabel,
-    yAxisLabel,
+    funnelSteps: formData.funnelSteps,
     origSelectedValues: filters || {},
+    rawFormData,
+    queryData,
     height,
     width,
     hooks,

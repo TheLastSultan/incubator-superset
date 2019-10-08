@@ -476,6 +476,22 @@ export const controls = {
     description: null,
   },
 
+  funnel_mode: {
+    type: 'CheckboxControl',
+    label: t('Activate Funnel Mode'),
+    renderTrigger: true,
+    default: true,
+    description: null,
+  },
+
+  show_delta: {
+    type: 'CheckboxControl',
+    label: t('Show Delta Between Values'),
+    renderTrigger: true,
+    default: false,
+    description: null,
+  },
+
   pivot_margins: {
     type: 'CheckboxControl',
     label: t('Show totals'),

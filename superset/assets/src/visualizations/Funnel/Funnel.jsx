@@ -38,7 +38,7 @@ const defaultProps = {
   yAxisLabel: '',
 };
 
-const formData = {
+const defaultFormData = {
   barstacked: false,
   bottomMargin: 'auto',
   colorScheme: 'd3Category10',
@@ -57,6 +57,8 @@ class Funnel extends React.Component {
   constructor(props) {
     super(props);
     this.formatQueryResponse = this.formatQueryResponse.bind(this);
+    this.formatValues = this.formatValues.bind(this);
+    this.state = { queryData: this.props.queryData}
   }
 
    formatQueryResponse(funnelSteps) {
@@ -64,18 +66,9 @@ class Funnel extends React.Component {
     const selValues = map(selectedValues, item => item);
     const values = [];
     let prevValue = 0;
-    let upperYBound = 0;
-    this.props.queryData.data.forEach((item) => {
-      Object.values(item).forEach((value, index) => {
-        const label = selValues && selValues[index] && selValues[index].step_label || `Step ${index + 1}`;
+    Object.values(this.props.queryData.data).forEach((value, index) => {
+        const label = selValues && selValues[index] && selValues[index].step_label 
         let metric = selValues && selValues[index] && selValues[index].metric;
-        if (typeof metric === 'object' && metric !== null) {
-          metric = metric.label;
-        }
-
-        // set upperYBound while iterating through value
-        const upperY = Number(value.valueOf());
-        if (upperY > upperYBound) { upperYBound = upperY; }
 
         // Return Delta between each step Visualization
         const roundedValue = value > 0 ? 100 : 0;
@@ -83,18 +76,38 @@ class Funnel extends React.Component {
             Math.round(100 * value / prevValue, 1) - 100
             : roundedValue;
         const deltaStr = `${delta}%`;
-        const valueObj = { key: `${metric}${index > 0 ? ', ' + deltaStr : ''}`, values: [{ y: value, x: label || `Step ${index + 1}` }] };
-
+        const tag_label = label || `Step ${index + 1}`
+        const valueObj = this.formatValues({tag_label, index, value, deltaStr})
         values.push(valueObj);
         prevValue = value;
-      });
     });
-     const queryData = this.props.queryData;
-     queryData.data = values;
-     return queryData;
+    debugger; 
+    return values
    }
+  
+  formatValues(formatObj, formatOptions = this.props.rawFormData){
+    const { tag_label, index, value, deltaStr } = formatObj;
+    const { funnel_mode, x_axis_label, show_delta} = formatOptions;
+
+    const chart_label = funnel_mode ?
+      x_axis_label || 'Funnel/Step Visualizaiton'
+      : tag_label 
+
+    const tagLabel = index > 0 && show_delta ?  
+      `${tag_label}, ${deltaStr}` 
+      : tag_label
+
+    let valueOutput = { key: tagLabel, values: [{ y: value, x: chart_label}] };
+
+    if (funnel_mode){
+      valueOutput.values.push({ y: -value, x: chart_label })
+    }  
+    return valueOutput
+  }
   render() {
-    const { funnelSteps, xAxisLabel, width, height, datasource, actions } = this.props;
+    const { funnelSteps, xAxisLabel, width, height, datasource, actions, rawFormData, queryData } = this.props;
+    const formatedData = this.formatQueryResponse(funnelSteps)
+    debugger; 
 
     return (
       <div className="scrollbar-container">
@@ -103,10 +116,9 @@ class Funnel extends React.Component {
             chartId={'11'}
             chartType="dist_bar"
             vizType="dist_bar"
-            formData={{ ...formData, xAxisLabel }}
-            queryResponse={this.formatQueryResponse(funnelSteps)}
+            formData={{ ...defaultFormData }}
+            queryResponse={Object.assign({}, queryData, {data: formatedData} )}
             datasource={datasource}
-            triggerQuery
             chartStatus="rendered"
             triggerRender
             height={height}

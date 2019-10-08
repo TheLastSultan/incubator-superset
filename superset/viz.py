@@ -619,65 +619,21 @@ class FunnelViz(BaseViz):
         json_data = self.json_dumps(cache_dict, sort_keys=True)
         return hashlib.md5(json_data.encode("utf-8")).hexdigest()
 
+
     def get_data(self, df):
+        agg_queries = {}
+        all_queries = self.query_obj()
+        for query in all_queries:
+            df = self.get_df(query_obj=all_queries[query])
+            obj = df.to_dict(orient="records")[0]
+            key = list(obj.keys())[0]
+            if key not in agg_queries:
+                agg_queries.update(obj)
+            else:
+                new_key = key + "_" + query
+                agg_queries.update( {new_key: obj[key]})
+        return agg_queries
 
-        fd = self.form_data
-        if not fd.get('funnel_steps'):
-            raise Exception(_('Add at least one Step'))
-
-        if isinstance(fd.get('funnel_steps'), list):
-            raise Exception(_('No selected values'))
-
-        sel_values = fd['funnel_steps']['selectedValues']
-        step_count = len(fd['funnel_steps']['queries'])
-
-        ddd = {}
-        d = []
-
-        if step_count == 0:
-            raise Exception(_('Add at least one Step'))
-
-        filter_store = []
-        if fd.get('filters'):
-            filter_store = fd['filters']
-
-        for i in range(0, step_count):
-            index = str(fd['funnel_steps']['queries'][i]['id'])
-            fd['metrics'] = []
-            fd['adhoc_filters'] = []
-            fd['filters'] = []
-            if sel_values[index]['metric']==[]:
-                raise Exception(_('Must add metric on each step'))
-            fd['metrics'].append(sel_values[index]['metric'])
-            if sel_values[index].get('adhoc_filters'):
-                fd['adhoc_filters'] = sel_values[index]['adhoc_filters']
-
-            qry = super(FunnelViz, self).query_obj()
-
-            if filter_store:
-                for filter in filter_store:
-                    qry['filter'].append(filter)
-
-
-            dfd = self.get_df_payload(query_obj=qry).get('df')
-
-            dd = dfd.to_dict(orient='records')
-
-            for key in dd[0]:
-                d_key = key
-                i = 1
-                if key in ddd.keys():
-                    while True:
-                        if not key + "_" + str(i) in ddd.keys(): break
-                        else: i += 1
-                    d_key += ("_" + str(i))
-                ddd[d_key] = dd[0][key]
-
-        d.append(ddd)
-
-        # back up absolute filter
-        fd['filters'] = filter_store
-        return d
 
 class TimeTableViz(BaseViz):
 

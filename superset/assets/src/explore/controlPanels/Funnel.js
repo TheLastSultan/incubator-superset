@@ -25,8 +25,9 @@ export default {
             label: t('Chart Options'),
             expanded: true,
             controlSetRows: [
+                ['funnel_mode'],
+                ['show_delta'],
                 ['x_axis_label'],
-                ['y_axis_label'],
             ],
         },
         {
